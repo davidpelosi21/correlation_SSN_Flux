@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "chrono": "cpp",
+        "cFCgraphics.C": "cpp",
+        "iostream": "cpp",
+        "new": "cpp",
+        "complex": "cpp"
+    }
+}

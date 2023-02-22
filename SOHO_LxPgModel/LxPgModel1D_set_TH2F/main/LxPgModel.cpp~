@@ -1,0 +1,92 @@
+#include "SolarModulation.h"
+
+int main(int argc, char **argv){
+
+  // --- specify nucleus and LIS model option ----
+  double Z = 1; 
+  double A = 1;
+  int  LIS = 0; // [0 to 4] [CC2016ApJ | NT2017ApJ | NT2017PRD | NT2017ASR | REINA2020]
+
+  // Run mode [0: runID as input | 1: by transport indices as input]
+  int RunMode=0;
+
+  // --- input ---
+  int RID1; // RunID input
+  int RID2; // RunID2 is used for making a scan between RunID-1 and RunID-2
+  int iXiD; // index of Xi parameter [for drift, if enabled]
+  int iK0;  // index of K0 parameter [for diffusion]
+
+
+  // the run dependes on the input arguments, as follows
+  
+  // ---- zero arguments: use default indices ----
+  if(argc==1){
+    RunMode=1;
+    iXiD = 49; // zero drift [49]
+    iK0  = 35; // avg diffusion level [35]
+  }
+  
+  // ---- one argument: RunID single run ----
+  if(argc==2){
+    RunMode= 0;
+    RID1= atoi(argv[1]);
+    RID2= RID1+1;
+  }
+
+  // ---- two arguments: scan between Run1 and Run2 ----
+  if(argc==3){
+    RunMode= 0;
+    RID1= atoi(argv[1]);
+    RID2= atoi(argv[2]);
+  }
+
+  // ---- three arguments: single run with indices XiD and K0 ----
+  if(argc==4){
+    RunMode= 1;
+    iXiD= atoi(argv[1]);
+    iK0 = atoi(argv[2]);
+    // the third argument is ignored...?
+  }
+
+
+  // --- TO PLOT OR STORE SOLUTION, MODIFY BELOW ---
+  
+
+  // --- by RUN ---
+  
+  if(RunMode==0){
+    for(int RID=RID1; RID<RID2; RID++){
+      SolarModulation* NTSolution= new SolarModulation(Z, A, LIS, RID);   
+      NTSolution->InitJLis(); 
+      NTSolution->SetJLis(); 
+      NTSolution->Solve(); 
+      NTSolution->ForceFieldSolution(); 
+      // NTSolution->SetSolutions();
+      NTSolution->PlotSolution();
+      NTSolution->StoreResults();
+      delete NTSolution;
+    }
+  }
+
+
+  // --- by Transport indices ----
+  if(RunMode==1){
+    SolarModulation* NTSolution= new SolarModulation(Z, A, LIS, iK0, iXiD);   
+    NTSolution->InitJLis(); 
+    NTSolution->SetJLis(); 
+    NTSolution->Solve(); 
+    NTSolution->ForceFieldSolution(); 
+    NTSolution->SetSolutions();
+    NTSolution->PlotSolution();
+    // NTSolution->StoreResults();
+    delete NTSolution;
+  }
+  
+  return 1;
+
+}
+
+
+
+
+
